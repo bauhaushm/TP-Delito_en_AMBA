@@ -38,5 +38,5 @@ Peralta, Santiago - Usuario GitHub: @SantiagoNPeralta
 Turrillo, Bruno - Usuario GitHub: @bauhaushm
 
 ## Informe académico
-- PDF: [Informe_TP_Delito_AMBA.pdf](Informe_TP_Delito_AMBA.pdf)
+- PDF: [Tp_delito.pdf](Tp_delito.pdf)
 - Proyecto en Overleaf: https://www.overleaf.com/project/6ae7eaf071196d0210e67e0d

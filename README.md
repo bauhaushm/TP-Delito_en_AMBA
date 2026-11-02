@@ -1,4 +1,4 @@
-# TP-Delito_en_AMBA
+# TP_Delito
 
 Trabajo Práctico Grupal — Laboratorio de Métodos Cuantitativos
 Tecnicatura Universitaria en Gestión y Análisis de Datos, FCE UBA — 2do cuatrimestre 2026
@@ -27,9 +27,9 @@ Todos los archivos están en la carpeta `Datasets/`, y el notebook los lee direc
 
 ## Cómo ejecutar el notebook
 
-Abrir `TP_Delito_amba_y_caba.ipynb` en Google Colab y elegir *Entorno de ejecución > Ejecutar todo*. No requiere archivos locales: los datos se descargan de este repositorio.
+Abrir `TP_Delito - Código.ipynb en Google Colab y elegir *Entorno de ejecución > Ejecutar todo*. No requiere archivos locales: los datos se descargan de este repositorio.
 
-## Integrantes (Nombre: usuario)
+## Integrantes 
 
 Chietino Luna, Micaela - Usuario GitHub: @mchietino
 Iandoli, Franco - Usuario GitHub: @Franco-Iandoli

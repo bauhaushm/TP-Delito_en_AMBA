@@ -38,5 +38,5 @@ Peralta, Santiago - Usuario GitHub: @SantiagoNPeralta
 Turrillo, Bruno - Usuario GitHub: @bauhaushm
 
 ## Informe académico
-- PDF: [TP_Delito.pdf](TP_Delito.pdf)
+- PDF: [TP_Delito - Informe.pdf](TP_Delito - Informe.pdf)
 - Proyecto en Overleaf: https://www.overleaf.com/project/6ae7eaf071196d0210e67e0d

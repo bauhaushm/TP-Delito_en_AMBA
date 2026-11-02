@@ -11,9 +11,9 @@ Tecnicatura Universitaria en Gestión y Análisis de Datos, FCE UBA — 2do cuat
 
 | Archivo | Descripción |
 |---|---|
-| `TP_Delito_amba_y_caba.ipynb` | Notebook de análisis (Google Colab), ejecutado |
+| `TP_Delito - Código.ipynb` | Notebook de análisis (Google Colab), ejecutado |
 | `Datasets/` | Datos utilizados (ver abajo) |
-| Informe PDF | [completar: nombre del archivo o link a Overleaf] |
+| `TP_Delito - Informe.pdf` | Informe académico en PDF ([proyecto en Overleaf](PEGAR_LINK_AQUÍ)) |
 | Presentación | [completar: link o archivo] |
 
 ## Datos

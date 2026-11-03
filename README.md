@@ -33,7 +33,6 @@ Abrir `TP_Delito - Código.ipynb en Google Colab y elegir *Entorno de ejecución
 
 Chietino Luna, Micaela - Usuario GitHub: @mchietino
 Iandoli, Franco - Usuario GitHub: @Franco-Iandoli
-Ortiz, Naiara - Usuario GitHub: @naiaraortizrodriguez
 Peralta, Santiago - Usuario GitHub: @SantiagoNPeralta
 Turrillo, Bruno - Usuario GitHub: @bauhaushm
 

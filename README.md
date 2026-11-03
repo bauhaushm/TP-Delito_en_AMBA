@@ -39,4 +39,4 @@ Turrillo, Bruno - Usuario GitHub: @bauhaushm
 
 ## Informe académico
 - PDF: [TP_Delito - Informe.pdf](TP_Delito - Informe.pdf)
-- Proyecto en Overleaf: https://www.overleaf.com/project/6ae7eaf071196d0210e67e0d
+- Proyecto en Overleaf: https://www.overleaf.com/project/6ae7eaf071196d0210e67e0d/share#dacbd9990582f5f0f81b0ed42c15a1e12ac839d698850e3a

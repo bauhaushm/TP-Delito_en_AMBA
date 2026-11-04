@@ -905,7 +905,7 @@ nav a.activo{background:#20334d;color:#fff}
 <p>
     <a href="https://github.com/bauhaushm/TP_Delito">Repositorio y notebook</a>
     ·
-    <a href="Informe_TP_Delito_AMBA.pdf">Informe completo (PDF)</a>
+    <a href="https://github.com/bauhaushm/TP_Delito/blob/main/TP_Delito%20-%20Informe.pdf" target="_blank" rel="noopener">Informe completo (PDF)</a>
 </p>
 
 <p>
@@ -925,6 +925,12 @@ const reduced = window.matchMedia(
 ).matches;
 
 const fmt = n => Math.round(n).toLocaleString('es-AR');
+
+// Texto y líneas claros por defecto en todos los gráficos (fondo oscuro)
+if(typeof Chart!=='undefined' && Chart.defaults){
+    Chart.defaults.color='#e7eef8';
+    Chart.defaults.borderColor='#283a55';
+}
 
 
 // ============================================
@@ -1777,6 +1783,7 @@ if(ingresoCanvas && typeof Chart!=='undefined'){
             datasets:porZona.concat([{
                 type:'line',
                 label:'Tendencia lineal',
+                pointStyle:'line',
                 data:[{x:xMin,y:ajuste.a+ajuste.b*xMin},{x:xMax,y:ajuste.a+ajuste.b*xMax}],
                 borderColor:'#c8d3e3',
                 borderDash:[7,6],
@@ -1866,6 +1873,7 @@ function barrasComuna(id,campo,formato,maxX,tituloX,nombresZona){
                         usePointStyle:true,
                         generateLabels:()=>['Norte','Centro','Sur'].map(z=>({
                             text:nombresZona[z],
+                            fontColor:'#e7eef8',
                             fillStyle:coloresPerfil[z],
                             strokeStyle:coloresPerfil[z],
                             lineWidth:0,

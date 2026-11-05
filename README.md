@@ -11,10 +11,11 @@ Tecnicatura Universitaria en Gestión y Análisis de Datos, FCE UBA — 2do cuat
 
 | Archivo | Descripción |
 |---|---|
-| `TP_Delito - Código.ipynb` | Notebook de análisis (Google Colab), ejecutado |
 | `Datasets/` | Datos utilizados (ver abajo) |
+| `TP_Delito - Código.ipynb` | Notebook de análisis (Google Colab), ejecutado |
 | `TP_Delito - Informe.pdf` | Informe académico en PDF |
-| Presentación | [completar: link o archivo] |
+| [TP_Delito - Presentación.pdf](TP_Delito%20-%20Presentaci%C3%B3n.pdf) | Presentación |
+| `index.html` | Sitio web interactivo con los resultados (publicado con GitHub Pages) |
 
 ## Datos
 
@@ -27,14 +28,14 @@ Todos los archivos están en la carpeta `Datasets/`, y el notebook los lee direc
 
 ## Cómo ejecutar el notebook
 
-Abrir `TP_Delito - Código.ipynb en Google Colab y elegir *Entorno de ejecución > Ejecutar todo*. No requiere archivos locales: los datos se descargan de este repositorio.
+Abrir `TP_Delito - Código.ipynb` en Google Colab y elegir *Entorno de ejecución > Ejecutar todo*. No requiere archivos locales: los datos se descargan de este repositorio.
 
 ## Integrantes 
 
-Chietino Luna, Micaela - Usuario GitHub: @mchietino
-Iandoli, Franco - Usuario GitHub: @Franco-Iandoli
-Peralta, Santiago - Usuario GitHub: @SantiagoNPeralta
-Turrillo, Bruno - Usuario GitHub: @bauhaushm
+- Chietino Luna, Micaela - @mchietino
+- Iandoli, Franco - @Franco-Iandoli
+- Peralta, Santiago - @SantiagoNPeralta
+- Turrillo, Bruno - @bauhaushm
 
 ## Informe académico
 - PDF: [TP_Delito - Informe.pdf](TP_Delito%20-%20Informe.pdf)

@@ -1531,6 +1531,12 @@ if(distribucionCanvas && typeof Chart!=='undefined'){
                     easing:'easeOutQuart'
                 },
 
+                // Evita que se muestren varios puntos a la vez en el tooltip
+                interaction:{
+                    mode:'nearest',
+                    intersect:true
+                },
+
                 scales:{
 
                     x:{
@@ -1586,34 +1592,49 @@ if(distribucionCanvas && typeof Chart!=='undefined'){
                     legend:{display:false},
 
                     tooltip:{
+                        mode:'nearest',
+                        intersect:true,
+
                         callbacks:{
 
                             title:items=>{
                                 const p=items[0].raw;
-                                return p.esResumen
-                                    ? nombresEstadistico[p.estadistico]+' · '+p.zona
-                                    : p.nombre;
+
+                                if(p.esResumen){
+                                    return p.zona+' — '+nombresEstadistico[p.estadistico];
+                                }
+
+                                return p.nombre+' — '+p.zona;
                             },
 
                             label:context=>{
-
                                 const p=context.raw;
 
-                                const tasa='Tasa: '+p.x.toLocaleString(
+                                return 'Tasa: '+p.x.toLocaleString(
                                     'es-AR',
                                     {maximumFractionDigits:0}
                                 );
+                            },
+
+                            afterLabel:context=>{
+                                const p=context.raw;
 
                                 if(p.esResumen){
-                                    return [tasa,ayudaEstadistico[p.estadistico]];
+                                    return ayudaEstadistico[p.estadistico];
                                 }
 
-                                return [p.zona,tasa];
-
+                                return 'Unidad territorial';
                             }
 
-                        }
+                        },
 
+                        titleColor:'#ffffff',
+                        bodyColor:'#e7eef8',
+                        backgroundColor:'#172840',
+                        borderColor:'#59b7e8',
+                        borderWidth:1,
+                        padding:12,
+                        displayColors:false
                     }
 
                 }

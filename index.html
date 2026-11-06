@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -212,7 +211,7 @@ h3{margin:24px 0 8px}
 }
 
 .chart-distribucion{
-    height:430px;
+    height:520px;
     position:relative;
 }
 
@@ -391,7 +390,7 @@ footer a{color:#b7cfff}
     .two,.conclusion{grid-template-columns:1fr}
     header{min-height:78vh}
     .chart{height:330px}
-    .chart-distribucion{height:400px}
+    .chart-distribucion{height:460px}
     .boxplot-panel{width:calc(100vw - 32px)}
 }
 
@@ -401,7 +400,7 @@ footer a{color:#b7cfff}
     .metric{padding:14px}
     .metric span{font-size:.78rem}
     nav{justify-content:flex-start}
-    .chart-distribucion{height:370px}
+    .chart-distribucion{height:420px}
 }
 
 @media(prefers-reduced-motion:reduce){
@@ -596,9 +595,13 @@ nav a.activo{background:#20334d;color:#fff}
         </div>
 
         <figcaption>
-            Distribución de la tasa promedio 2017–2025 por comuna y partido. Cada punto representa una unidad territorial. Las cajas muestran el rango intercuartílico y la mediana.
+            <strong>Cómo leerlo.</strong> Cada punto es una comuna (CABA) o un partido (Conurbano), según su tasa promedio 2017–2025 por cada 100.000 habitantes. La caja contiene al 50 % central de las unidades de cada zona (del primer al tercer cuartil) y la línea blanca gruesa marca la mediana. Las líneas que salen de la caja llegan hasta el valor más extremo que no se considera atípico (hasta 1,5 veces el ancho de la caja); los puntos que quedan más allá son valores atípicos (la Comuna 1 en CABA y Morón en el Conurbano). Pasá el cursor (o tocá) sobre la mediana, los bordes de la caja o los extremos para ver el valor exacto.
         </figcaption>
     </figure>
+
+    <div class="insight">
+        La caja de CABA es mucho más ancha que la del Conurbano: las comunas porteñas se parecen menos entre sí que los partidos. Además, la caja de CABA queda más a la derecha, es decir, con tasas más altas.
+    </div>
 
 </div>
 
@@ -792,7 +795,7 @@ nav a.activo{background:#20334d;color:#fff}
         <figure>
             <div class="chart-comunas"><canvas id="violentos"></canvas></div>
             <figcaption>
-                Peso de los delitos violentos (lesiones, amenazas y homicidios) sobre el total, por comuna, promedio 2017–2025.
+                Peso de los delitos violentos (lesiones dolosas, amenazas y homicidios dolosos) sobre el total de robos, hurtos y violentos de cada comuna, promedio 2017–2025. Un valor alto no significa más hechos violentos, sino que pesan más dentro de lo denunciado en esa comuna.
             </figcaption>
         </figure>
     </div>
@@ -1215,16 +1218,85 @@ const puntos=unidades.map((u,i)=>({
 
 }));
 
+// Puntos del resumen del boxplot (mediana, cuartiles y límites).
+// No se ven: sirven para mostrar el valor al pasar el cursor.
+const nombresEstadistico={
+    min:'Límite inferior',
+    q1:'Primer cuartil (Q1)',
+    mediana:'Mediana',
+    q3:'Tercer cuartil (Q3)',
+    max:'Límite superior'
+};
+
+const ayudaEstadistico={
+    min:'Valor más bajo que no se considera atípico.',
+    q1:'El 25 % de las unidades queda por debajo de este valor.',
+    mediana:'La mitad de las unidades queda por debajo de este valor.',
+    q3:'El 75 % de las unidades queda por debajo de este valor.',
+    max:'Valor más alto que no se considera atípico.'
+};
+
+const resumen=[];
+
+["CABA","Conurbano"].forEach(zona=>{
+    const s=estadisticas[zona];
+    ["min","q1","mediana","q3","max"].forEach(k=>{
+        resumen.push({
+            x:s[k],
+            y:zona==="CABA"?0:1,
+            zona:zona,
+            estadistico:k,
+            esResumen:true
+        });
+    });
+});
+
+// Nombres que se anotan en el gráfico, como en el notebook:
+// el valor más bajo, el último valor dentro de las líneas y el más alto de cada zona.
+const anotaciones={};
+
+["CABA","Conurbano"].forEach(zona=>{
+
+    const lista=unidades
+        .filter(u=>u.zona===zona)
+        .sort((a,b)=>a.valor-b.valor);
+
+    const limite=estadisticas[zona].max;
+
+    const dentro=lista.filter(u=>u.valor<=limite+1e-9);
+
+    anotaciones[zona]={
+        bajo:lista[0],
+        ultimo:dentro[dentro.length-1],
+        alto:lista[lista.length-1]
+    };
+
+});
+
+// Convierte un color hexadecimal en rgba con transparencia
+function hexA(hex,a){
+    const n=parseInt(hex.slice(1),16);
+    return 'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','+a+')';
+}
+
+const colorLinea='#8a97a8';
+
 const boxplotPlugin={
 
     id:"boxplotPlugin",
 
+    // Franjas de fondo, cajas, líneas y mediana (debajo de los puntos)
     beforeDatasetsDraw(chart){
 
         const ctx=chart.ctx;
 
         const x=chart.scales.x;
         const y=chart.scales.y;
+        const area=chart.chartArea;
+
+        // Cajas altas, como en el notebook
+        const alto=Math.abs(y.getPixelForValue(0.7)-y.getPixelForValue(0));
+        const mitad=Math.abs(y.getPixelForValue(0.5)-y.getPixelForValue(0));
 
         ["CABA","Conurbano"].forEach(zona=>{
 
@@ -1242,45 +1314,21 @@ const boxplotPlugin={
 
             const yCentro=y.getPixelForValue(centro);
 
-            // Cajas ligeramente más altas para mejorar su lectura.
-            const alto=32;
-
             ctx.save();
 
-            ctx.strokeStyle=color;
-            ctx.fillStyle=color+"35";
-            ctx.lineWidth=2;
+            // Franja de fondo de la zona
+            ctx.fillStyle=hexA(color,0.08);
 
             ctx.fillRect(
-                xQ1,
-                yCentro-alto/2,
-                xQ3-xQ1,
-                alto
+                area.left,
+                yCentro-mitad,
+                area.right-area.left,
+                mitad*2
             );
 
-            ctx.strokeRect(
-                xQ1,
-                yCentro-alto/2,
-                xQ3-xQ1,
-                alto
-            );
-
-            // Mediana
-
+            // Líneas (bigotes) y topes, del color de la zona
             ctx.beginPath();
-
             ctx.strokeStyle=color;
-            ctx.lineWidth=3;
-
-            ctx.moveTo(xMed,yCentro-alto/2);
-            ctx.lineTo(xMed,yCentro+alto/2);
-
-            ctx.stroke();
-
-            // Bigotes
-
-            ctx.beginPath();
-
             ctx.lineWidth=2;
 
             ctx.moveTo(xMin,yCentro);
@@ -1289,17 +1337,130 @@ const boxplotPlugin={
             ctx.moveTo(xQ3,yCentro);
             ctx.lineTo(xMax,yCentro);
 
-            ctx.moveTo(xMin,yCentro-7);
-            ctx.lineTo(xMin,yCentro+7);
+            ctx.moveTo(xMin,yCentro-alto*0.25);
+            ctx.lineTo(xMin,yCentro+alto*0.25);
 
-            ctx.moveTo(xMax,yCentro-7);
-            ctx.lineTo(xMax,yCentro+7);
+            ctx.moveTo(xMax,yCentro-alto*0.25);
+            ctx.lineTo(xMax,yCentro+alto*0.25);
+
+            ctx.stroke();
+
+            // Caja: degradado del color de la zona y borde del mismo color
+            const degradado=ctx.createLinearGradient(0,yCentro-alto/2,0,yCentro+alto/2);
+            degradado.addColorStop(0,hexA(color,0.6));
+            degradado.addColorStop(1,hexA(color,0.22));
+
+            ctx.fillStyle=degradado;
+
+            ctx.fillRect(
+                xQ1,
+                yCentro-alto/2,
+                xQ3-xQ1,
+                alto
+            );
+
+            ctx.strokeStyle=color;
+            ctx.lineWidth=2;
+
+            ctx.strokeRect(
+                xQ1,
+                yCentro-alto/2,
+                xQ3-xQ1,
+                alto
+            );
+
+            // Mediana: línea blanca gruesa con un brillo del color de la zona
+            ctx.beginPath();
+
+            ctx.shadowColor=color;
+            ctx.shadowBlur=12;
+
+            ctx.strokeStyle='#ffffff';
+            ctx.lineWidth=3.5;
+
+            ctx.moveTo(xMed,yCentro-alto/2);
+            ctx.lineTo(xMed,yCentro+alto/2);
 
             ctx.stroke();
 
             ctx.restore();
 
         });
+
+    },
+
+    // Textos: valor de la mediana y nombres de los casos clave (encima de los puntos)
+    afterDatasetsDraw(chart){
+
+        const ctx=chart.ctx;
+
+        const x=chart.scales.x;
+        const y=chart.scales.y;
+
+        const alto=Math.abs(y.getPixelForValue(0.7)-y.getPixelForValue(0));
+
+        ctx.save();
+
+        ctx.textAlign='center';
+
+        function nombre(texto,valor,yCentro,dy,color){
+
+            const px=x.getPixelForValue(valor);
+
+            ctx.beginPath();
+            ctx.strokeStyle=hexA(color,0.8);
+            ctx.lineWidth=1;
+
+            ctx.moveTo(px,yCentro);
+            ctx.lineTo(px,yCentro+dy);
+
+            ctx.stroke();
+
+            ctx.fillStyle=color;
+            ctx.font='600 12px system-ui, sans-serif';
+            ctx.textBaseline=dy>0?'top':'bottom';
+
+            ctx.fillText(texto,px,yCentro+dy+(dy>0?3:-3));
+
+        }
+
+        ["CABA","Conurbano"].forEach(zona=>{
+
+            const s=estadisticas[zona];
+            const a=anotaciones[zona];
+
+            const color=coloresZona[zona];
+
+            const centro=zona==="CABA"?0:1;
+            const yCentro=y.getPixelForValue(centro);
+
+            const abajo=zona==="CABA"?34:42;
+            const arriba=zona==="CABA"?30:38;
+
+            // Valor de la mediana, arriba de la caja
+            ctx.fillStyle=color;
+            ctx.font='700 13px system-ui, sans-serif';
+            ctx.textBaseline='bottom';
+
+            ctx.fillText(
+                'mediana '+fmt(s.mediana),
+                x.getPixelForValue(s.mediana),
+                yCentro-alto/2-6
+            );
+
+            nombre(a.bajo.nombre,a.bajo.valor,yCentro,abajo,color);
+
+            if(a.ultimo.nombre!==a.bajo.nombre){
+                nombre(a.ultimo.nombre,a.ultimo.valor,yCentro,abajo,color);
+            }
+
+            if(a.alto.nombre!==a.ultimo.nombre){
+                nombre(a.alto.nombre,a.alto.valor,yCentro,-arriba,color);
+            }
+
+        });
+
+        ctx.restore();
 
     }
 
@@ -1319,10 +1480,11 @@ if(distribucionCanvas && typeof Chart!=='undefined'){
                 datasets:[
                     {
                         label:'Unidades territoriales',
+                        order:1,
 
                         data:puntos,
 
-                        pointRadius:5,
+                        pointRadius:5.5,
                         pointHoverRadius:9,
 
                         pointBackgroundColor:puntos.map(
@@ -1331,6 +1493,30 @@ if(distribucionCanvas && typeof Chart!=='undefined'){
 
                         pointBorderColor:'#f1f5fb',
                         pointBorderWidth:1.2
+                    },
+                    {
+                        label:'Resumen',
+                        order:0,
+
+                        data:resumen,
+
+                        // No se ven: solo responden al cursor
+                        pointRadius:0,
+
+                        pointHoverRadius:resumen.map(
+                            p=>p.estadistico==='mediana'?8:6
+                        ),
+
+                        pointHitRadius:resumen.map(
+                            p=>p.estadistico==='mediana'?18:12
+                        ),
+
+                        pointBackgroundColor:resumen.map(
+                            p=>p.estadistico==='mediana'?'#f1f5fb':coloresZona[p.zona]
+                        ),
+
+                        pointBorderColor:'#f1f5fb',
+                        pointBorderWidth:1.5
                     }
                 ]
             },
@@ -1348,12 +1534,12 @@ if(distribucionCanvas && typeof Chart!=='undefined'){
                 scales:{
 
                     x:{
-                        min:0,
-                        max:11500,
+                        min:1000,
+                        max:11000,
 
                         title:{
                             display:true,
-                            text:'Hechos cada 100.000 habitantes',
+                            text:'Hechos cada 100.000 habitantes (promedio 2017–2025)',
                             color:'#aab8cc'
                         },
 
@@ -1368,8 +1554,8 @@ if(distribucionCanvas && typeof Chart!=='undefined'){
 
                     y:{
                         type:'linear',
-                        min:-0.5,
-                        max:1.5,
+                        min:-0.8,
+                        max:1.9,
 
                         afterBuildTicks(axis){
                             axis.ticks=[
@@ -1379,13 +1565,15 @@ if(distribucionCanvas && typeof Chart!=='undefined'){
                         },
 
                         ticks:{
-                            color:'#e7eef8',
+                            color:c=>c.tick&&c.tick.value===0
+                                ?coloresZona.CABA
+                                :coloresZona.Conurbano,
+
+                            font:{size:13,weight:'600'},
 
                             callback:v=>
-                                v===0?'CABA (15 comunas)':
-                                v===1?'Conurbano (24 partidos)':'',
-
-                            font:{size:12}
+                                v===0?['CABA','(15 comunas)']:
+                                v===1?['Conurbano','(24 partidos)']:''
                         },
 
                         grid:{display:false}
@@ -1400,19 +1588,27 @@ if(distribucionCanvas && typeof Chart!=='undefined'){
                     tooltip:{
                         callbacks:{
 
-                            title:items=>items[0].raw.nombre,
+                            title:items=>{
+                                const p=items[0].raw;
+                                return p.esResumen
+                                    ? nombresEstadistico[p.estadistico]+' · '+p.zona
+                                    : p.nombre;
+                            },
 
                             label:context=>{
 
                                 const p=context.raw;
 
-                                return [
-                                    p.zona,
-                                    'Tasa: '+p.x.toLocaleString(
-                                        'es-AR',
-                                        {maximumFractionDigits:0}
-                                    )
-                                ];
+                                const tasa='Tasa: '+p.x.toLocaleString(
+                                    'es-AR',
+                                    {maximumFractionDigits:0}
+                                );
+
+                                if(p.esResumen){
+                                    return [tasa,ayudaEstadistico[p.estadistico]];
+                                }
+
+                                return [p.zona,tasa];
 
                             }
 
